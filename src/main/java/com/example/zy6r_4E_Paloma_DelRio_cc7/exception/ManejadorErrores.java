@@ -1,0 +1,30 @@
+package com.example.zy6r_4E_Paloma_DelRio_cc7.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+
+public class ManejadorErrores {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> validar(MethodArgumentNotValidException ex) {
+        Map<String, String> errores = new LinkedHashMap<>();
+        for (FieldError err : ex.getBindingResult().getFieldErrors()) {
+            errores.put(err.getField(), err.getDefaultMessage());
+        }
+        return ResponseEntity.badRequest().body(errores);
+    }
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<Map<String, String>> custom(CustomException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("Error a la hora de cargar datos", ex.getMessage()));
+    }
+}
+
